@@ -5,7 +5,7 @@
 
 A better debug console for VS Code / forks. Filter, search, and let AI query your logs.
 
-**Latest release:** 0.0.9 — see [CHANGELOG.md](CHANGELOG.md) for notes.
+**Latest release:** 0.0.10 — see [CHANGELOG.md](CHANGELOG.md) for notes.
 
 ![Debug Console+ demo](recording.gif)
 

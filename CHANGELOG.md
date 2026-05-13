@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.0.10] - 2026-05-13
+
+### Changed
+
+- Marketplace display name is now **Debug Console+** (removed the Beta suffix).
+- Log row flex alignment uses **baseline** so wrapped multi-line rows align more cleanly.
+
 ## [0.0.9] - 2026-04-19
 
 ### Changed
