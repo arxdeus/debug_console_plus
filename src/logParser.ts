@@ -13,30 +13,22 @@ const ANSI_ESCAPE_REGEX = /\x1b\[[0-9;]*m/g;
 // Alternative ANSI format that might appear as literal text: [38;5;75m, [0m, [1;31m, etc.
 const ANSI_LITERAL_REGEX = /\[\d+(?:;\d+)*m/g;
 
+function stripPlatformPrefixes(message: string): string {
+  let cleaned = message;
+  cleaned = cleaned.replace(FLUTTER_PREFIX_REGEX, '');
+  cleaned = cleaned.replace(LOGCAT_PREFIX_REGEX, '');
+  return cleaned.trimEnd();
+}
+
 /**
  * Cleans up log message by removing platform prefixes and escape codes
  * Preserves indentation and structure
  */
 function cleanMessage(message: string): string {
-  let cleaned = message;
-
-  // Remove Flutter prefix: "flutter: " at the start
-  cleaned = cleaned.replace(FLUTTER_PREFIX_REGEX, '');
-
-  // Remove Android logcat prefix anywhere in the string (I/flutter (27893): )
-  cleaned = cleaned.replace(LOGCAT_PREFIX_REGEX, '');
-
-  // Remove ANSI escape codes (actual escape sequences)
+  let cleaned = stripPlatformPrefixes(message);
   cleaned = cleaned.replace(ANSI_ESCAPE_REGEX, '');
-
-  // Remove literal ANSI-like codes that weren't parsed as escapes
-  // e.g., [38;5;75m or [0m
   cleaned = cleaned.replace(ANSI_LITERAL_REGEX, '');
-
-  // Only remove trailing whitespace, preserve ALL leading indentation
-  cleaned = cleaned.trimEnd();
-
-  return cleaned;
+  return cleaned.trimEnd();
 }
 
 /**
@@ -188,7 +180,8 @@ export function parseLogEntry(
     };
   }
 
-  return {
+  const prefixedOnly = stripPlatformPrefixes(output).trimEnd();
+  const base: ParsedLog = {
     id,
     timestamp,
     level,
@@ -197,6 +190,12 @@ export function parseLogEntry(
     sessionId,
     group,
   };
+
+  if (prefixedOnly !== cleanedMessage) {
+    return { ...base, displayMessage: prefixedOnly };
+  }
+
+  return base;
 }
 
 /**

@@ -778,6 +778,72 @@
       return `<span class="log-tag">[${tag}]</span>`;
     });
   }
+  function logDisplayText(log) {
+    if (log.displayMessage != null && log.displayMessage !== '') {
+      return log.displayMessage;
+    }
+    return log.message;
+  }
+
+  function createTerminalSgrStyleState() {
+    return { fgClass: null, bold: false };
+  }
+
+  function resetTerminalSgrStyle(state) {
+    state.fgClass = null;
+    state.bold = false;
+  }
+
+  /** Map SGR codes to CSS classes that use `terminal.ansi*` theme colors. */
+  function applySgrSequence(seq, state) {
+    const parts = seq.length === 0 ? ['0'] : seq.split(';');
+    const codes = [];
+    for (let pi = 0; pi < parts.length; pi++) {
+      const raw = parts[pi];
+      codes.push(raw === '' ? 0 : (parseInt(raw, 10) || 0));
+    }
+    for (let k = 0; k < codes.length; k++) {
+      const c = codes[k];
+      if (c === 0) {
+        resetTerminalSgrStyle(state);
+      } else if (c === 1) {
+        state.bold = true;
+      } else if (c === 22) {
+        state.bold = false;
+      } else if (c >= 30 && c <= 37) {
+        state.fgClass = 'terminal-fg-' + String(c);
+      } else if (c === 39) {
+        state.fgClass = null;
+      } else if (c >= 90 && c <= 97) {
+        state.fgClass = 'terminal-fg-' + String(c);
+      } else if ((c === 38 || c === 48) && codes[k + 1] === 5 && k + 2 < codes.length) {
+        k += 2;
+      } else if ((c === 38 || c === 48) && codes[k + 1] === 2 && k + 4 < codes.length) {
+        k += 4;
+      }
+    }
+  }
+
+  function wrapStyledInnerHtml(innerHtml, state) {
+    if (!state.fgClass && !state.bold) {
+      return innerHtml;
+    }
+    const classes = ['terminal-sgr'];
+    if (state.fgClass) {
+      classes.push(state.fgClass);
+    }
+    if (state.bold) {
+      classes.push('terminal-bold');
+    }
+    return `<span class="${classes.join(' ')}">${innerHtml}</span>`;
+  }
+
+  function renderPlainSegmentForDisplay(plain) {
+    let html = highlightSearchMatches(plain);
+    html = applyTagHighlighting(html);
+    return html;
+  }
+
 
   // Find end of balanced JSON object/array starting at `start` in raw text.
   function findBalancedJsonEnd(text, start) {
@@ -894,8 +960,36 @@
   }
 
   function processTextSegment(text) {
-    let html = highlightSearchMatches(text);
-    html = applyTagHighlighting(html);
+    const state = createTerminalSgrStyleState();
+    let html = '';
+    let i = 0;
+    while (i < text.length) {
+      const esc = text.indexOf('\x1b', i);
+      if (esc === -1) {
+        const tail = text.slice(i);
+        if (tail.length > 0) {
+          html += wrapStyledInnerHtml(renderPlainSegmentForDisplay(tail), state);
+        }
+        break;
+      }
+      if (esc > i) {
+        const chunk = text.slice(i, esc);
+        html += wrapStyledInnerHtml(renderPlainSegmentForDisplay(chunk), state);
+      }
+      const c1 = esc + 1 < text.length ? text.charCodeAt(esc + 1) : 0;
+      if (c1 !== 0x5b) {
+        i = esc + 1;
+        continue;
+      }
+      const mPos = text.indexOf('m', esc + 2);
+      if (mPos === -1) {
+        i = esc + 1;
+        continue;
+      }
+      const seq = text.slice(esc + 2, mPos);
+      applySgrSequence(seq, state);
+      i = mPos + 1;
+    }
     return html;
   }
 
@@ -946,7 +1040,7 @@
 
     const msg = document.createElement('span');
     msg.className = 'log-message';
-    msg.innerHTML = processMessageForDisplay(log.message);
+    msg.innerHTML = processMessageForDisplay(logDisplayText(log));
     entry.appendChild(msg);
 
     return entry;

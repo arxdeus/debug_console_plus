@@ -7,7 +7,14 @@ export interface ParsedLog {
   id: string;
   timestamp: number;
   level: LogLevel;
+  /** Normalized text: platform prefixes and ANSI removed; used for search, copy, and level detection. */
   message: string;
+  /**
+   * When ANSI or literal SGR-like sequences were present before stripping, this holds the same
+   * normalization as `message` except escape sequences are preserved for terminal-colored display.
+   * Omitted when identical to `message`.
+   */
+  displayMessage?: string;
   category: string;
   sessionId: string;
   /** Set when DAP output event had group; used for level inheritance from content line. */
@@ -42,4 +49,3 @@ export interface WebviewToExtensionMessage {
   scheme?: string;
   url?: string;
 }
-

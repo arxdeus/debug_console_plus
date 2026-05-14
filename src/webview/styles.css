@@ -1,18 +1,3 @@
-:root {
-  --vscode-font-family: var(--vscode-font-family);
-  --vscode-font-size: var(--vscode-font-size);
-  --vscode-foreground: var(--vscode-foreground);
-  --vscode-background: var(--vscode-editor-background);
-  --vscode-button-background: var(--vscode-button-background);
-  --vscode-button-foreground: var(--vscode-button-foreground);
-  --vscode-button-hoverBackground: var(--vscode-button-hoverBackground);
-  --vscode-input-background: var(--vscode-input-background);
-  --vscode-input-foreground: var(--vscode-input-foreground);
-  --vscode-input-border: var(--vscode-input-border);
-  --vscode-scrollbarSlider-background: var(--vscode-scrollbarSlider-background);
-  --vscode-scrollbarSlider-hoverBackground: var(--vscode-scrollbarSlider-hoverBackground);
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -22,8 +7,11 @@
 body {
   font-family: var(--vscode-font-family);
   font-size: var(--vscode-font-size);
-  color: var(--vscode-foreground);
-  background-color: var(--vscode-background);
+  color: var(--vscode-terminal-foreground, var(--vscode-foreground));
+  background-color: var(
+    --vscode-panel-background,
+    var(--vscode-sideBar-background, var(--vscode-editor-background))
+  );
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -35,10 +23,13 @@ body {
   display: flex;
   align-items: center;
   padding: 2px 8px;
-  border-bottom: 1px solid var(--vscode-input-border);
+  border-bottom: 1px solid var(--vscode-panel-border, var(--vscode-input-border));
   flex-shrink: 0;
   gap: 8px;
-  background-color: var(--vscode-editor-background);
+  background-color: var(
+    --vscode-panel-background,
+    var(--vscode-sideBar-background, var(--vscode-editor-background))
+  );
 }
 
 .level-filters {
@@ -54,7 +45,7 @@ body {
   height: 20px;
   padding: 0;
   background-color: transparent;
-  color: var(--vscode-descriptionForeground, #888);
+  color: var(--vscode-descriptionForeground, var(--vscode-disabledForeground));
   border: 1px solid transparent;
   border-radius: 3px;
   cursor: pointer;
@@ -74,27 +65,127 @@ body {
 .level-btn.active {
   background-color: var(--vscode-button-background);
   color: var(--vscode-button-foreground);
+  border: 1px solid transparent;
   opacity: 1;
 }
 
 .level-btn[data-level="debug"].active {
-  background-color: var(--vscode-debugIcon-startForeground, #89d185);
-  color: #000;
+  color: var(
+    --vscode-terminal-ansiBrightBlack,
+    var(--vscode-terminal-ansiBlack, var(--vscode-descriptionForeground, var(--vscode-terminal-foreground, var(--vscode-foreground))))
+  );
+  background-color: color-mix(
+    in srgb,
+    var(
+      --vscode-terminal-ansiBrightBlack,
+      var(--vscode-terminal-ansiBlack, var(--vscode-descriptionForeground, var(--vscode-terminal-foreground, var(--vscode-foreground))))
+    )
+      14%,
+    transparent
+  );
+  border-color: var(--vscode-input-border);
 }
 
 .level-btn[data-level="info"].active {
-  background-color: var(--vscode-editorInfo-foreground, #3794ff);
-  color: #fff;
+  color: var(
+    --vscode-editorInfo-foreground,
+    var(
+      --vscode-textLink-foreground,
+      var(
+        --vscode-terminal-ansiBlue,
+        var(
+          --vscode-terminal-ansiBrightBlue,
+          var(--vscode-debugConsole-infoForeground, var(--vscode-editor-foreground, var(--vscode-foreground)))
+        )
+      )
+    )
+  );
+  background-color: color-mix(
+    in srgb,
+    var(
+      --vscode-editorInfo-foreground,
+      var(
+        --vscode-textLink-foreground,
+        var(
+          --vscode-terminal-ansiBlue,
+          var(
+            --vscode-terminal-ansiBrightBlue,
+            var(--vscode-debugConsole-infoForeground, var(--vscode-editor-foreground, var(--vscode-foreground)))
+          )
+        )
+      )
+    )
+      18%,
+    transparent
+  );
+  border-color: color-mix(
+    in srgb,
+    var(
+      --vscode-editorInfo-foreground,
+      var(
+        --vscode-textLink-foreground,
+        var(
+          --vscode-terminal-ansiBlue,
+          var(
+            --vscode-terminal-ansiBrightBlue,
+            var(--vscode-debugConsole-infoForeground, var(--vscode-input-border))
+          )
+        )
+      )
+    )
+      40%,
+    var(--vscode-input-border)
+  );
 }
 
 .level-btn[data-level="warn"].active {
-  background-color: var(--vscode-editorWarning-foreground, #cca700);
-  color: #000;
+  color: var(
+    --vscode-terminal-ansiYellow,
+    var(--vscode-terminal-ansiBrightYellow, var(--vscode-debugConsole-warningForeground, var(--vscode-editorWarning-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+  );
+  background-color: color-mix(
+    in srgb,
+    var(
+      --vscode-terminal-ansiYellow,
+      var(--vscode-terminal-ansiBrightYellow, var(--vscode-debugConsole-warningForeground, var(--vscode-editorWarning-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+    )
+      18%,
+    transparent
+  );
+  border-color: color-mix(
+    in srgb,
+    var(
+      --vscode-terminal-ansiYellow,
+      var(--vscode-terminal-ansiBrightYellow, var(--vscode-debugConsole-warningForeground, var(--vscode-editorWarning-foreground, var(--vscode-input-border))))
+    )
+      40%,
+    var(--vscode-input-border)
+  );
 }
 
 .level-btn[data-level="error"].active {
-  background-color: var(--vscode-editorError-foreground, #f48771);
-  color: #000;
+  color: var(
+    --vscode-terminal-ansiRed,
+    var(--vscode-terminal-ansiBrightRed, var(--vscode-debugConsole-errorForeground, var(--vscode-editorError-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+  );
+  background-color: color-mix(
+    in srgb,
+    var(
+      --vscode-terminal-ansiRed,
+      var(--vscode-terminal-ansiBrightRed, var(--vscode-debugConsole-errorForeground, var(--vscode-editorError-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+    )
+      18%,
+    transparent
+  );
+  border-color: color-mix(
+    in srgb,
+    var(
+      --vscode-terminal-ansiRed,
+      var(--vscode-terminal-ansiBrightRed, var(--vscode-debugConsole-errorForeground, var(--vscode-editorError-foreground, var(--vscode-input-border))))
+    )
+      40%,
+    var(--vscode-input-border)
+  );
 }
 
 /* Logic toggle button */
@@ -106,7 +197,7 @@ body {
   height: 20px;
   padding: 0;
   background-color: transparent;
-  color: var(--vscode-descriptionForeground, #888);
+  color: var(--vscode-descriptionForeground, var(--vscode-disabledForeground));
   border: 1px solid transparent;
   border-radius: 3px;
   cursor: pointer;
@@ -171,7 +262,7 @@ body {
 .search-nav-count {
   font-size: 11px;
   font-family: var(--vscode-editor-font-family, monospace);
-  color: var(--vscode-descriptionForeground, #888);
+  color: var(--vscode-descriptionForeground, var(--vscode-disabledForeground));
   white-space: nowrap;
   padding: 0 2px;
   min-width: 2.5em;
@@ -194,19 +285,20 @@ body {
 }
 
 .filter-input::placeholder {
-  color: var(--vscode-input-placeholderForeground, #888);
+  color: var(--vscode-input-placeholderForeground, var(--vscode-disabledForeground));
 }
 
-/* Logs container */
+/* Logs container — default text uses Integrated Terminal foreground from theme */
 .logs-container {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 4px 8px;
-  font-family: var(--vscode-editor-font-family, 'Courier New', monospace);
-  font-size: var(--vscode-editor-font-size, 12px);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: var(--vscode-editor-font-size, var(--vscode-font-size));
   font-weight: var(--vscode-editor-font-weight, normal);
   line-height: 1.2;
+  color: var(--vscode-terminal-foreground, var(--vscode-foreground));
 }
 
 .log-entry {
@@ -221,13 +313,22 @@ body {
 }
 
 .log-entry.highlight {
-  background-color: var(--vscode-editor-findMatchHighlightBackground, rgba(234, 92, 0, 0.33));
+  background-color: var(
+    --vscode-terminal-findMatchBackground,
+    var(
+      --vscode-terminal-findMatchHighlightBackground,
+      var(--vscode-editor-findMatchHighlightBackground, var(--vscode-editor-wordHighlightBackground, var(--vscode-editor-selectionBackground)))
+    )
+  );
 }
 
 .log-entry.hover-highlight {
-  outline: 2px solid var(--vscode-focusBorder, #007acc);
+  outline: 2px solid var(--vscode-focusBorder, var(--vscode-contrastActiveBorder));
   outline-offset: -2px;
-  background-color: var(--vscode-list-hoverBackground, rgba(255, 255, 255, 0.1));
+  background-color: var(
+    --vscode-list-hoverBackground,
+    var(--vscode-toolbar-hoverBackground)
+  );
 }
 
 /* Virtual scroll container */
@@ -249,42 +350,79 @@ body {
 }
 
 .log-entry.debug {
-  color: var(--vscode-descriptionForeground, #888);
+  color: var(
+    --vscode-terminal-ansiBrightBlack,
+    var(--vscode-terminal-ansiBlack, var(--vscode-descriptionForeground, var(--vscode-disabledForeground)))
+  );
 }
 
 .log-entry.debug .log-timestamp,
 .log-entry.debug .log-level {
-  color: var(--vscode-debugIcon-startForeground, #89d185);
+  color: var(
+    --vscode-terminal-ansiBrightBlack,
+    var(--vscode-terminal-ansiBlack, var(--vscode-descriptionForeground, var(--vscode-terminal-foreground, var(--vscode-foreground))))
+  );
 }
 
-.log-entry.info .log-timestamp,
-.log-entry.info .log-level {
-  color: var(--vscode-editorInfo-foreground, #3794ff);
+/* INFO: level column = blue (workbench + terminal schema); never fall back to terminal-foreground here (reads as white) */
+.logs-container .log-entry.info > .log-level {
+  color: var(
+    --vscode-editorInfo-foreground,
+    var(
+      --vscode-textLink-foreground,
+      var(
+        --vscode-terminal-ansiBlue,
+        var(
+          --vscode-terminal-ansiBrightBlue,
+          var(--vscode-debugConsole-infoForeground, var(--vscode-editor-foreground, var(--vscode-foreground)))
+        )
+      )
+    )
+  );
 }
 
+/* Time + body: как обычный текст терминала (светлый / «белый» на тёмной теме) */
+.logs-container .log-entry.info > .log-timestamp,
+.logs-container .log-entry.info > .log-message {
+  color: var(--vscode-terminal-foreground, var(--vscode-editor-foreground, var(--vscode-foreground)));
+}
+
+/* WARNING / ERROR: whole row + timestamp + level use terminal palette (как было) */
 .log-entry.warn {
-  color: var(--vscode-editorWarning-foreground, #cca700);
+  color: var(
+    --vscode-terminal-ansiYellow,
+    var(--vscode-terminal-ansiBrightYellow, var(--vscode-debugConsole-warningForeground, var(--vscode-editorWarning-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+  );
 }
 
 .log-entry.warn .log-timestamp,
 .log-entry.warn .log-level {
-  color: var(--vscode-editorWarning-foreground, #cca700);
+  color: var(
+    --vscode-terminal-ansiYellow,
+    var(--vscode-terminal-ansiBrightYellow, var(--vscode-debugConsole-warningForeground, var(--vscode-editorWarning-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+  );
 }
 
 .log-entry.error {
-  color: var(--vscode-editorError-foreground, #f48771);
+  color: var(
+    --vscode-terminal-ansiRed,
+    var(--vscode-terminal-ansiBrightRed, var(--vscode-debugConsole-errorForeground, var(--vscode-editorError-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+  );
 }
 
 .log-entry.error .log-timestamp,
 .log-entry.error .log-level {
-  color: var(--vscode-editorError-foreground, #f48771);
+  color: var(
+    --vscode-terminal-ansiRed,
+    var(--vscode-terminal-ansiBrightRed, var(--vscode-debugConsole-errorForeground, var(--vscode-editorError-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+  );
 }
 
 .log-timestamp {
   flex-shrink: 0;
   min-width: 12ch;
   text-align: right;
-  color: var(--vscode-descriptionForeground, #999);
+  color: var(--vscode-terminal-foreground, var(--vscode-editor-foreground, var(--vscode-foreground)));
   font-size: 0.9em;
   white-space: nowrap;
 }
@@ -340,65 +478,138 @@ body {
   background-color: var(--vscode-scrollbarSlider-hoverBackground);
 }
 
-/* Clickable file links - user codebase (default) */
+/* Clickable file links - user codebase (default); source paths align with debug console */
 .file-link,
 .url-link {
-  color: var(--vscode-textLink-foreground, #3794ff);
+  color: var(
+    --vscode-terminal-ansiBlue,
+    var(--vscode-terminal-ansiBrightBlue, var(--vscode-debugConsole-sourceForeground, var(--vscode-textLink-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground)))))
+  );
   text-decoration: underline;
   cursor: pointer;
 }
 
 .file-link:hover,
 .url-link:hover {
-  color: var(--vscode-textLink-activeForeground, #3794ff);
+  color: var(
+    --vscode-terminal-ansiBrightBlue,
+    var(--vscode-terminal-ansiBlue, var(--vscode-debugConsole-sourceForeground, var(--vscode-textLink-activeForeground, var(--vscode-textLink-foreground, var(--vscode-terminal-foreground, var(--vscode-foreground))))))
+  );
   text-decoration: underline;
 }
 
 /* Flutter/Dart SDK and external package links - muted so they're distinct from user code */
 .file-link--external {
-  color: var(--vscode-descriptionForeground, #858585);
+  color: var(--vscode-descriptionForeground, var(--vscode-disabledForeground));
 }
 
 .file-link--external:hover {
-  color: var(--vscode-descriptionForeground, #858585);
+  color: var(--vscode-descriptionForeground, var(--vscode-disabledForeground));
   opacity: 0.9;
 }
 
-/* Search highlight */
+/* Search highlight — terminal find-match colors from theme */
 .search-highlight {
-  background-color: var(--vscode-editor-findMatchHighlightBackground, rgba(234, 92, 0, 0.33));
+  background-color: var(
+    --vscode-terminal-findMatchHighlightBackground,
+    var(
+      --vscode-terminal-findMatchBackground,
+      var(--vscode-editor-findMatchHighlightBackground, var(--vscode-editor-wordHighlightBackground, var(--vscode-editor-selectionBackground)))
+    )
+  );
   border-radius: 2px;
 }
 
 /* Tag highlight [TAG] */
 .log-tag {
-  color: var(--vscode-symbolIcon-classForeground, var(--vscode-textLink-foreground, #4ec9b0));
+  color: var(
+    --vscode-terminal-ansiMagenta,
+    var(--vscode-terminal-ansiBrightMagenta, var(--vscode-symbolIcon-classForeground, var(--vscode-textLink-foreground, var(--vscode-terminal-ansiCyan, var(--vscode-terminal-foreground, var(--vscode-foreground))))))
+  );
   font-weight: 600;
 }
 
-/* JSON syntax highlighting — uses VS Code theme-adaptive variables */
-.json-bracket.json-depth-0 { color: var(--vscode-editorBracketHighlight-foreground1, #ffd700); }
-.json-bracket.json-depth-1 { color: var(--vscode-editorBracketHighlight-foreground2, #da70d6); }
-.json-bracket.json-depth-2 { color: var(--vscode-editorBracketHighlight-foreground3, #179fff); }
-.json-bracket.json-depth-3 { color: var(--vscode-editorBracketHighlight-foreground4, #ffd700); }
-.json-bracket.json-depth-4 { color: var(--vscode-editorBracketHighlight-foreground5, #da70d6); }
-.json-bracket.json-depth-5 { color: var(--vscode-editorBracketHighlight-foreground6, #179fff); }
-.json-key { color: var(--vscode-debugTokenExpression-name, #9cdcfe); }
-.json-string { color: var(--vscode-debugTokenExpression-string, #ce9178); }
-.json-number { color: var(--vscode-debugTokenExpression-number, #b5cea8); }
-.json-bool { color: var(--vscode-debugTokenExpression-boolean, #4e94ce); }
-.json-null { color: var(--vscode-debugTokenExpression-error, #f48771); font-style: italic; }
-.json-punctuation { color: var(--vscode-descriptionForeground, #6a737d); }
+/* JSON — colors from Integrated Terminal palette (`terminal.ansi*`) with editor fallbacks */
+.json-bracket.json-depth-0 {
+  color: var(--vscode-terminal-ansiYellow, var(--vscode-editorBracketHighlight-foreground1, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-bracket.json-depth-1 {
+  color: var(--vscode-terminal-ansiMagenta, var(--vscode-editorBracketHighlight-foreground2, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-bracket.json-depth-2 {
+  color: var(--vscode-terminal-ansiCyan, var(--vscode-editorBracketHighlight-foreground3, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-bracket.json-depth-3 {
+  color: var(--vscode-terminal-ansiBrightYellow, var(--vscode-editorBracketHighlight-foreground4, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-bracket.json-depth-4 {
+  color: var(--vscode-terminal-ansiBrightMagenta, var(--vscode-editorBracketHighlight-foreground5, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-bracket.json-depth-5 {
+  color: var(--vscode-terminal-ansiBrightCyan, var(--vscode-editorBracketHighlight-foreground6, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-key {
+  color: var(--vscode-terminal-ansiBlue, var(--vscode-debugTokenExpression-name, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-string {
+  color: var(--vscode-terminal-ansiGreen, var(--vscode-debugTokenExpression-string, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-number {
+  color: var(--vscode-terminal-ansiRed, var(--vscode-debugTokenExpression-number, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-bool {
+  color: var(--vscode-terminal-ansiCyan, var(--vscode-debugTokenExpression-boolean, var(--vscode-terminal-foreground, var(--vscode-editor-foreground))));
+}
+.json-null {
+  color: var(--vscode-terminal-ansiBrightRed, var(--vscode-debugTokenExpression-error, var(--vscode-terminal-ansiRed, var(--vscode-debugConsole-errorForeground, var(--vscode-editorError-foreground)))));
+  font-style: italic;
+}
+.json-punctuation {
+  color: var(--vscode-terminal-ansiBrightBlack, var(--vscode-terminal-ansiBlack, var(--vscode-descriptionForeground, var(--vscode-disabledForeground))));
+}
+
+/* SGR foreground spans — map escape codes to `terminal.ansi*` theme keys (Integrated Terminal schema) */
+.terminal-sgr {
+  display: inline;
+}
+
+.terminal-bold {
+  font-weight: 700;
+}
+
+.terminal-fg-30 { color: var(--vscode-terminal-ansiBlack, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-31 { color: var(--vscode-terminal-ansiRed, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-32 { color: var(--vscode-terminal-ansiGreen, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-33 { color: var(--vscode-terminal-ansiYellow, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-34 { color: var(--vscode-terminal-ansiBlue, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-35 { color: var(--vscode-terminal-ansiMagenta, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-36 { color: var(--vscode-terminal-ansiCyan, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-37 { color: var(--vscode-terminal-ansiWhite, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+
+.terminal-fg-90 { color: var(--vscode-terminal-ansiBrightBlack, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-91 { color: var(--vscode-terminal-ansiBrightRed, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-92 { color: var(--vscode-terminal-ansiBrightGreen, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-93 { color: var(--vscode-terminal-ansiBrightYellow, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-94 { color: var(--vscode-terminal-ansiBrightBlue, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-95 { color: var(--vscode-terminal-ansiBrightMagenta, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-96 { color: var(--vscode-terminal-ansiBrightCyan, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
+.terminal-fg-97 { color: var(--vscode-terminal-ansiBrightWhite, var(--vscode-terminal-foreground, var(--vscode-foreground))); }
 
 /* Context menu */
 .context-menu {
   position: fixed;
-  background-color: var(--vscode-menu-background, #252526);
-  border: 1px solid var(--vscode-menu-border, #454545);
+  background-color: var(
+    --vscode-menu-background,
+    var(--vscode-editorWidget-background, var(--vscode-panel-background))
+  );
+  border: 1px solid var(
+    --vscode-menu-border,
+    var(--vscode-widget-border, var(--vscode-panel-border, var(--vscode-contrastBorder)))
+  );
   border-radius: 4px;
   padding: 4px 0;
   min-width: 180px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, var(--vscode-widget-border));
   z-index: 1000;
 }
 
@@ -408,15 +619,15 @@ body {
   padding: 6px 12px;
   background: none;
   border: none;
-  color: var(--vscode-menu-foreground, #cccccc);
-  font-size: var(--vscode-font-size, 13px);
+  color: var(--vscode-menu-foreground, var(--vscode-editorWidget-foreground, var(--vscode-foreground)));
+  font-size: var(--vscode-font-size);
   text-align: left;
   cursor: pointer;
 }
 
 .context-menu-item:hover {
-  background-color: var(--vscode-menu-selectionBackground, #094771);
-  color: var(--vscode-menu-selectionForeground, #ffffff);
+  background-color: var(--vscode-menu-selectionBackground, var(--vscode-list-activeSelectionBackground));
+  color: var(--vscode-menu-selectionForeground, var(--vscode-list-activeSelectionForeground));
 }
 
 .context-menu-item--current {
@@ -425,6 +636,9 @@ body {
 
 .context-menu-separator {
   height: 1px;
-  background-color: var(--vscode-menu-separatorBackground, #454545);
+  background-color: var(
+    --vscode-menu-separatorBackground,
+    var(--vscode-widget-border, var(--vscode-panel-border))
+  );
   margin: 4px 8px;
 }
